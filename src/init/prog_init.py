@@ -2,6 +2,7 @@ from subprocess import call
 import getpass
 import psycopg2
 
+
 print('Warning!')
 print('This script should only be run by the superintendent of the library to initiate the library management program.')
 print('The database and admin account will be established during the execution.')
@@ -28,8 +29,12 @@ conn = psycopg2.connect("dbname=library")
 curr = conn.cursor()
 
 curr.execute("CREATE USER " + admin_name + " WITH ENCRYPTED PASSWORD %s", (admin_pass1,))
-
 curr.execute("GRANT ALL PRIVILEGES ON DATABASE library to " + admin_name)
+
+
 
 conn.commit()
 print("Admin account {} have been constructed.".format(admin_name))
+
+curr.close()
+conn.close()
