@@ -1,3 +1,4 @@
+from .schemas import *
 from subprocess import call
 import getpass
 import psycopg2
@@ -30,11 +31,17 @@ curr = conn.cursor()
 
 curr.execute("CREATE USER " + admin_name + " WITH ENCRYPTED PASSWORD %s", (admin_pass1,))
 curr.execute("GRANT ALL PRIVILEGES ON DATABASE library to " + admin_name)
+print("Admin account {} have been constructed.".format(admin_name))
 
 
+create_book(curr)
+create_on_shelf_book(curr)
+create_restore(curr)
+create_payment_bill(curr)
+create_collection_bill(curr)
+create_storage(curr)
 
 conn.commit()
-print("Admin account {} have been constructed.".format(admin_name))
 
 curr.close()
 conn.close()
