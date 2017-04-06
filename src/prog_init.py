@@ -28,7 +28,8 @@ while True:
 conn = psycopg2.connect("dbname=library")
 curr = conn.cursor()
 
-curr.execute("CREATE USER " + admin_name + " WITH ENCRYPTED PASSWORD %s", (admin_pass1,))
+curr.execute("CREATE USER " + admin_name +
+             " WITH ENCRYPTED PASSWORD %s", (admin_pass1,))
 curr.execute("GRANT ALL PRIVILEGES ON DATABASE library to " + admin_name)
 print("Admin account {} have been constructed.".format(admin_name))
 
