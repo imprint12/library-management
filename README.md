@@ -2,10 +2,10 @@ book(ISBN, title, writer, publisher)
 
 on_shelf_book(ISBN, price, number)
 
-restock(ISBN, number, total_price)
+restore(ISBN, number, total_price)
 
-payment_info(no, date, amount, paid)
+payment_bill(no, date, total_price, arrived, paid)
 
-bill_info(no, date, amount)
+collection_bill(no, date, total_price)
 
 storage(ISBN, number)

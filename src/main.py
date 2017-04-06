@@ -8,10 +8,14 @@ while True:
         username = input('Username: ')
         password = getpass.getpass('Password: ')
         conn = psycopg2.connect(dbname='library', user=username, password=password)
+        break
 
     except psycopg2.OperationalError:
         print("Failed to login.")
         retry = input("Retry?(y/n) ")
 
         if retry != 'y' and retry != 'Y':
-            break
+            exit(-1)
+
+
+curr = conn.cursor()
