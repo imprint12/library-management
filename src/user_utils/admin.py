@@ -1,9 +1,9 @@
-from . import Librarian
+from .library import Librarian
 
-class Admin():
+class Admin(Librarian):
     def __init__(self, conn, username):
         super.__init__(conn, username)
 
 
     def interface(self):
-        "Welcome, {}!"
+        print("Welcome, {}!".format(self.username))
