@@ -1,5 +1,6 @@
 class Librarian:
     """docstring for Librarian."""
+
     def __init__(self, conn, username):
         self.conn = conn
         self.username = username
@@ -18,7 +19,6 @@ class Librarian:
         print()
 
         command = input("Enter command: ")
-
         if (command == "q"):
             conn.close()
             exit(0)
@@ -27,8 +27,14 @@ class Librarian:
             self.interface()
 
         command_ord = ord(command[0])
-        if not 1 <= command_ord - '0' <= 6:
+        if not 1 <= ord(command_ord) - ord('0') <= 6:
             print("Invalid command.")
             self.interface()
+        command_num = ord(command_ord) - ord('0') + 1
 
+    def search(self):
+        print("Please enter one of the following command:")
+        pass
+
+    def restock(self):
         

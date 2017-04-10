@@ -1,7 +1,7 @@
 from subprocess import call
 import getpass
 import psycopg2
-from init.schemas import *
+from init.schemas import create_tables
 
 print('Warning!')
 print('This script should only be run by the superintendent of the library to initiate the library management program.')
@@ -34,12 +34,7 @@ curr.execute("GRANT ALL PRIVILEGES ON DATABASE library to " + admin_name)
 print("Admin account {} have been constructed.".format(admin_name))
 
 
-create_book(curr)
-create_on_shelf_book(curr)
-create_restore(curr)
-create_payment_bill(curr)
-create_collection_bill(curr)
-create_storage(curr)
+create_tables(curr)
 
 conn.commit()
 
