@@ -6,16 +6,16 @@ def create_tables(curr):
             id INTEGER,
             age INTEGER,
             gender CHAR
-    )
+        )
     """)
 
     curr.execute("""
-    CREATE TABLE book_info(
-        ISBN VARCHAR(20) PRIMARY KEY ,
-        title VARCHAR(50),
-        writer VARCHAR(50),
-        publisher VARCHAR(50)
-    )
+        CREATE TABLE book_info(
+            ISBN VARCHAR(20) PRIMARY KEY ,
+            title VARCHAR(50),
+            writer VARCHAR(50),
+            publisher VARCHAR(50)
+        )
     """)
 
     curr.execute("""
@@ -47,7 +47,7 @@ def create_tables(curr):
     """)
 
     curr.execute("""
-        CREATE TABLE collection_bill(
+        CREATE TABLE revenue_bill(
             bill_no INTEGER PRIMARY KEY,
             dt TIMESTAMP,
             total_price NUMERIC(12, 2),
@@ -68,4 +68,32 @@ def create_tables(curr):
             order_no INTEGER PRIMARY KEY REFERENCES restock_order,
             bill_no INTEGER REFERENCES payment_bill
         )
+    """)
+
+def create_employee(curr):
+    curr.execute("""
+        CREATE ROLE employee;
+    """)
+
+    curr.execute("""
+        CREATE POLICY lib_update_policy ON librarian FOR UPDATE TO employee
+        USING (current_user = username);
+        CREATE POLICY lib_select_policy ON librarian FOR SELECT TO employee
+        USING (current_user = username);
+    """)
+
+#    curr.execute("""
+#        CREATE POLICY library_policy ON librarian FOR SELECT TO employee
+#        USING (current_user = username)
+#    """)
+
+    curr.execute("""
+        GRANT SELECT, UPDATE ON librarian TO employee;
+        GRANT ALL ON book_info TO employee;
+        GRANT ALL ON storage TO employee;
+        GRANT ALL ON restock_order TO employee;
+        GRANT ALL ON revenue_bill TO employee;
+
+        GRANT INSERT, SELECT ON restock_pay TO employee;
+        GRANT INSERT, SELECT ON revenue_storage TO employee;
     """)
