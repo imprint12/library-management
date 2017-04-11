@@ -1,6 +1,14 @@
 def create_tables(curr):
     curr.execute("""
-        CREATE TABLE librarian(
+        CREATE TABLE employee(
+            username VARCHAR(30) PRIMARY KEY,
+            true_name VARCHAR(50),
+            id INTEGER,
+            age INTEGER,
+            gender CHAR
+        );
+
+        CREATE TABLE admin(
             username VARCHAR(30) PRIMARY KEY,
             true_name VARCHAR(50),
             id INTEGER,
@@ -33,7 +41,7 @@ def create_tables(curr):
             num INTEGER,
             total_price NUMERIC(12, 2),
             state VARCHAR(10),
-            username VARCHAR(30) REFERENCES librarian
+            username VARCHAR(30) REFERENCES employee
     )
     """)
 
@@ -42,7 +50,7 @@ def create_tables(curr):
             bill_no INTEGER PRIMARY KEY,
             dt TIMESTAMP,
             total_price NUMERIC(12, 2),
-            username VARCHAR(30) REFERENCES librarian
+            username VARCHAR(30) REFERENCES employee
     )
     """)
 
@@ -51,7 +59,7 @@ def create_tables(curr):
             bill_no INTEGER PRIMARY KEY,
             dt TIMESTAMP,
             total_price NUMERIC(12, 2),
-            username VARCHAR(30) REFERENCES librarian
+            username VARCHAR(30) REFERENCES employee
     )
     """)
 
@@ -70,15 +78,20 @@ def create_tables(curr):
         )
     """)
 
-def create_employee(curr):
+def create_auth(curr):
     curr.execute("""
         CREATE ROLE employee;
+        CREATE ROLE admin;
     """)
 
+
+    curr.execute("GRANT ALL PRIVILEGES ON DATABASE library TO admin;");
+    curr.execute("GRANT ALL ON ALL TABLES IN SCHEMA public TO admin;");
+
     curr.execute("""
-        CREATE POLICY lib_update_policy ON librarian FOR UPDATE TO employee
+        CREATE POLICY lib_update_policy ON employee FOR UPDATE TO employee
         USING (current_user = username);
-        CREATE POLICY lib_select_policy ON librarian FOR SELECT TO employee
+        CREATE POLICY lib_select_policy ON employee FOR SELECT TO employee
         USING (current_user = username);
     """)
 
@@ -88,7 +101,7 @@ def create_employee(curr):
 #    """)
 
     curr.execute("""
-        GRANT SELECT, UPDATE ON librarian TO employee;
+        GRANT SELECT, UPDATE ON employee TO employee;
         GRANT ALL ON book_info TO employee;
         GRANT ALL ON storage TO employee;
         GRANT ALL ON restock_order TO employee;

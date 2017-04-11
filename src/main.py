@@ -19,3 +19,9 @@ while True:
 
 
 curr = conn.cursor()
+username = curr.execute("select current_user from USER;")
+print(username)
+
+
+curr.close()
+conn.close()

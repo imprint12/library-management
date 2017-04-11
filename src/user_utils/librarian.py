@@ -37,4 +37,3 @@ class Librarian:
         pass
 
     def restock(self):
-        

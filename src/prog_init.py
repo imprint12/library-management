@@ -23,21 +23,24 @@ while True:
         print("Two inputs of password don't match!")
         continue
     else:
+        true_name = input("True name: ")
+        age = input("Age: ")
+        gender = input("Gender(f or m?): ")
         break
+
 
 conn = psycopg2.connect("dbname=library")
 curr = conn.cursor()
 
+create_tables(curr)
+create_auth(curr)
+
 curr.execute("CREATE USER " + admin_name +
-             " WITH ENCRYPTED PASSWORD %s", (admin_pass1,))
-curr.execute("GRANT ALL PRIVILEGES ON DATABASE library TO " + admin_name + ";")
-curr.execute("GRANT ALL ON ALL TABLES IN SCHEMA public TO " + admin_name + ";")
+             " CREATEROLE ENCRYPTED PASSWORD %s IN GROUP admin;", (admin_pass1,))
+
+curr.execute("INSERT INTO admin VALUES (%s, %s, 0, %s, %s);", (admin_name, true_name, age, gender))
 
 print("Admin account {} have been constructed.".format(admin_name))
-
-
-create_tables(curr)
-create_employee(curr)
 
 curr.execute("GRANT ALL PRIVILEGES ON DATABASE library TO " + admin_name + ";")
 curr.execute("GRANT ALL ON ALL TABLES IN SCHEMA public TO " + admin_name + ";")
