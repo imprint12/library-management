@@ -1,3 +1,6 @@
+from . import search
+
+
 class Employee:
     """docstring for Librarian."""
 
@@ -33,8 +36,31 @@ class Employee:
         command_num = ord(command_ord) - ord('0') + 1
 
     def search(self):
-        print("Please enter one of the following command:")
-        pass
+
+        print("\n1. (ISBN NUMBER)")
+        print("2. (TITLE)")
+        print("3. (WRITER'S NAME)")
+        print("4. (PUBLISHER)\n\n")
+
+        print("Please enter one of the commands above.")
+        print("For example: 1. Introduction to Algorithms\n")
+        command = input("Command: ")
+
+        cmd = command.split('.')
+        if len(cmd) != 2 or not('1' <= cmd[0] <= '4'):
+            print("Invalid command.")
+            self.interface()
+
+        cmd_n, arg = cmd[0], cmd[1].strip()
+
+        if cmd_n == '1':
+            search.isbn(self.conn, arg)
+        elif cmd_n == '2':
+            search.title(self.conn, arg)
+        elif cmd_n == '3':
+            search.writer(self.conn, arg)
+        else:
+            search.publisher(self.conn, arg)
 
     def restock(self):
         pass
