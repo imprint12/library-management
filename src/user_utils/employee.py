@@ -1,4 +1,4 @@
-class Librarian:
+class Employee:
     """docstring for Librarian."""
 
     def __init__(self, conn, username):
@@ -37,3 +37,4 @@ class Librarian:
         pass
 
     def restock(self):
+        pass

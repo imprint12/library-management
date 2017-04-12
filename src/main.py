@@ -1,5 +1,7 @@
 import getpass
 import psycopg2
+from user_utils.admin import Admin
+from user_utils.employee import Employee
 
 print('Welcome to the library management software!')
 
@@ -19,9 +21,20 @@ while True:
 
 
 curr = conn.cursor()
-username = curr.execute("select current_user from USER;")
-print(username)
-
-
+curr.execute("""SELECT %s IN
+                            (SELECT username
+                            FROM admin);
+            """, (username,))
+is_admin = curr.fetchone()[0]
 curr.close()
+
+if is_admin:
+    adm = Admin(conn, username)
+    adm.interface()
+else:
+    emply = Employee(conn, username)
+    emply.interface()
+
+
+
 conn.close()
