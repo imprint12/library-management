@@ -68,10 +68,70 @@ class Employee:
         curr = self.conn.cursor()
         curr.execute(query, (arg,))
         books = curr.fetchall()
+
+        print("\nSearch result:")
         for book in books:
-            print(book)
-        self.interface()
+            print("ISBN: " + book[0])
+            print("Title: " + book[1].title())
+            print("Writers:", end='')
+            for wt in book[2]:
+                print(' ' + wt.title(), end=',')
+            print("\b ")
+            print("Publisher: " + book[3])
+            print()
         curr.close()
 
+    def change_info(self):
+        isbn = input("Enter the ISBN of the book that need to be changed: ")
+        curr = self.conn.cursor()
+
+        print("Enter one of the following commands:")
+        print("1. (new book name)")
+        print("2. (new writers, splited by commas)")
+        print("3. (new pulisher)")
+        print("4. (new price)")
+
+        command_table = {1: 'title', 2: 'writer', 3: 'publisher'}
+
+        command = input("Command: ")
+        cmd = command.split('.')
+        if len(cmd) != 2 or not('1' <= cmd[0] <= '4'):
+            print("Invalid command.")
+            self.interface()
+        cmd_n, arg = ord(cmd[0].strip()) - ord('0'), cmd[1].strip().lower()
+
+        if cmd_n == 4:
+            try:
+                curr.execute("""
+                UPDATE storage
+                set price = %s
+                WHERE ISBN = %s
+                """, (arg, ISBN))
+                self.conn.commit()
+            except:
+                print("Update Error!")
+                self.interface()
+        else:
+            query = """
+            UPDATE book_info
+            set {} = %s
+            WHERE ISBN = %s
+            """
+            try:
+                print(query.format(command_table[cmd_n]))
+                curr.execute(query.format(command_table[cmd_n]), (arg, isbn))
+                self.conn.commit()
+            except:
+                print("Update Error!")
+                self.interface()
+
+
+
+    def pay(self):
+        pass
+    def put_books(self):
+        pass
+    def sell(self):
+        pass
     def restock(self):
         pass

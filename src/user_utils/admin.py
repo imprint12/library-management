@@ -32,3 +32,15 @@ class Admin(Employee):
 
         if command_num == 1:
             self.search()
+        elif command_num == 2:
+            self.change_info()
+        elif command_num == 3:
+            self.restock()
+        elif command_num == 4:
+            self.pay()
+        elif command_num == 5:
+            self.put_books()
+        else:
+            self.sell()
+
+        self.interface()
