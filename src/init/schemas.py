@@ -49,7 +49,7 @@ def create_tables(curr):
             num INTEGER,
             total_price NUMERIC(12, 2),
             state VARCHAR(10),
-            username TEXT REFERENCES employee
+            username TEXT
     )
     """)
 
@@ -58,7 +58,7 @@ def create_tables(curr):
             bill_no INTEGER PRIMARY KEY,
             dt TIMESTAMP,
             total_price NUMERIC(12, 2),
-            username TEXT REFERENCES employee
+            username TEXT
     )
     """)
 
@@ -67,7 +67,7 @@ def create_tables(curr):
             bill_no INTEGER PRIMARY KEY,
             dt TIMESTAMP,
             total_price NUMERIC(12, 2),
-            username TEXT REFERENCES employee
+            username TEXT 
     )
     """)
 

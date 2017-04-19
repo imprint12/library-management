@@ -131,30 +131,30 @@ class Employee:
     def restock(self):
         isbn = input("Enter the ISBN of the book that need to be restocked: ")
         curr = self.conn.cursor()
-        num = input("How many books to order? ")
-        price = input("What's the price of one book? ")
+        num = int(input("How many books to order? "))
+        price = int(input("What's the price of one book? "))
 
         total_price = num * price
 
         try:
             curr.execute("""
             SELECT max(order_no)
-            FROM restock_order
+            FROM restock_order;
             """)
-            max_no = curr.fetchall
-            if not max:
+            max_no = curr.fetchone()[0]
+            if not max_no:
                 max_no = 0
-            else:
-                max_no = max[0]
-
             curr.execute("""
             INSERT INTO restock_order VALUES
             (%s, %s, %s, %s, 'nonpaid', %s)
             """, (max_no + 1, isbn, num, total_price, self.username))
+            self.conn.commit()
 
         except Exception as e:
             print("Error occured")
-            print(e)
+            raise e
+
+        curr.close()
 
     def pay(self):
         pass
