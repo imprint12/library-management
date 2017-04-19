@@ -1,16 +1,16 @@
 def create_tables(curr):
     curr.execute("""
         CREATE TABLE employee(
-            username VARCHAR(30) PRIMARY KEY,
-            true_name VARCHAR(50),
+            username TEXT PRIMARY KEY,
+            true_name TEXT,
             id INTEGER,
             age INTEGER,
             gender CHAR
         );
 
         CREATE TABLE admin(
-            username VARCHAR(30) PRIMARY KEY,
-            true_name VARCHAR(50),
+            username TEXT PRIMARY KEY,
+            true_name TEXT,
             id INTEGER,
             age INTEGER,
             gender CHAR
@@ -20,9 +20,9 @@ def create_tables(curr):
     curr.execute("""
         CREATE TABLE book_info(
             ISBN VARCHAR(20) PRIMARY KEY ,
-            title VARCHAR(50),
+            title TEXT,
             writer TEXT[],
-            publisher VARCHAR(50)
+            publisher TEXT
         )
     """)
 
@@ -49,7 +49,7 @@ def create_tables(curr):
             num INTEGER,
             total_price NUMERIC(12, 2),
             state VARCHAR(10),
-            username VARCHAR(30) REFERENCES employee
+            username TEXT REFERENCES employee
     )
     """)
 
@@ -58,7 +58,7 @@ def create_tables(curr):
             bill_no INTEGER PRIMARY KEY,
             dt TIMESTAMP,
             total_price NUMERIC(12, 2),
-            username VARCHAR(30) REFERENCES employee
+            username TEXT REFERENCES employee
     )
     """)
 
@@ -67,7 +67,7 @@ def create_tables(curr):
             bill_no INTEGER PRIMARY KEY,
             dt TIMESTAMP,
             total_price NUMERIC(12, 2),
-            username VARCHAR(30) REFERENCES employee
+            username TEXT REFERENCES employee
     )
     """)
 

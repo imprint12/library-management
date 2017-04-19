@@ -53,7 +53,6 @@ class Employee:
 
         cmd_n, arg = cmd[0].strip(), cmd[1].strip().lower()
 
-
         query = """
         SELECT *
         FROM book_info NATURAL LEFT OUTER JOIN storage
@@ -129,12 +128,15 @@ class Employee:
 
         curr.close()
 
+    def restock(self):
+        isbn = input("Enter the ISBN of the book that need to be changed: ")
+        curr = self.conn.cursor()
 
     def pay(self):
         pass
+
     def put_books(self):
         pass
+
     def sell(self):
-        pass
-    def restock(self):
         pass
