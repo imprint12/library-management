@@ -42,7 +42,7 @@ class Employee:
         print("4. (PUBLISHER)\n\n")
 
         print("Please enter one of the commands above.")
-        print("For example: 1. Introduction to Algorithms\n")
+        print("For example: 2. Introduction to Algorithms\n")
         command = input("Command: ")
 
         cmd = command.split('.')
@@ -69,7 +69,7 @@ class Employee:
         curr.execute(query, (arg,))
         books = curr.fetchall()
 
-        print("\nSearch result:")
+        print("\nSearch result:\n")
         for book in books:
             print("ISBN: " + book[0])
             print("Title: " + book[1].title())
@@ -78,6 +78,8 @@ class Employee:
                 print(' ' + wt.title(), end=',')
             print("\b ")
             print("Publisher: " + book[3])
+            print("Price: " + str(book[4]))
+            print("Storage number: " + str(book[5]))
             print()
         curr.close()
 
@@ -106,10 +108,11 @@ class Employee:
                 UPDATE storage
                 set price = %s
                 WHERE ISBN = %s
-                """, (arg, ISBN))
+                """, (arg, isbn))
                 self.conn.commit()
-            except:
+            except Exception as e:
                 print("Update Error!")
+                print(e)
                 self.interface()
         else:
             query = """
