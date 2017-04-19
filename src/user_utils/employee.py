@@ -50,28 +50,27 @@ class Employee:
             print("Invalid command.")
             self.interface()
 
-        cmd_n, arg = cmd[0].strip(), cmd[1].strip()
+        cmd_n, arg = cmd[0].strip(), cmd[1].strip().lower()
 
 
         query = """
         SELECT *
-        FROM book_info NATURAL LEFT OUTER JOIN storage NATURAL JOIN writes
+        FROM book_info NATURAL LEFT OUTER JOIN storage
         WHERE"""
         if (cmd_n == '1'):
             query += " ISBN = %s"
         elif (cmd_n == '2'):
             query += " title = %s"
         elif (cmd_n == '3'):
-            query += " writer = %s"
+            query += " %s = ANY (writer)"
         elif (cmd_n == '4'):
             query += " publisher = %s"
-        print(arg)
         curr = self.conn.cursor()
         curr.execute(query, (arg,))
         books = curr.fetchall()
-        print(books)
         for book in books:
             print(book)
+        self.interface()
         curr.close()
 
     def restock(self):

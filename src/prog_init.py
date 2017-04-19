@@ -36,7 +36,7 @@ create_tables(curr)
 create_auth(curr)
 
 curr.execute("CREATE USER " + admin_name +
-             " CREATEROLE ENCRYPTED PASSWORD %s IN GROUP admin;", (admin_pass1,))
+        " CREATEROLE ENCRYPTED PASSWORD %s IN GROUP admin;", (admin_pass1,))
 
 curr.execute("INSERT INTO admin VALUES (%s, %s, 0, %s, %s);", (admin_name, true_name, age, gender))
 

@@ -21,17 +21,18 @@ def create_tables(curr):
         CREATE TABLE book_info(
             ISBN VARCHAR(20) PRIMARY KEY ,
             title VARCHAR(50),
+            writer TEXT[],
             publisher VARCHAR(50)
         )
     """)
 
-    curr.execute("""
-        CREATE TABLE writes(
-            ISBN VARCHAR REFERENCES book_info ,
-            writer VARCHAR(50),
-            PRIMARY KEY(ISBN, writer)
-        )
-    """)
+#    curr.execute("""
+#        CREATE TABLE writes(
+#            ISBN VARCHAR REFERENCES book_info ,
+#            writer VARCHAR(50),
+#            PRIMARY KEY(ISBN, writer)
+#        )
+#    """)
 
     curr.execute("""
         CREATE TABLE storage(
