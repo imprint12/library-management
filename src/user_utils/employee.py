@@ -1,4 +1,3 @@
-from . import search
 
 
 class Employee:
@@ -51,16 +50,29 @@ class Employee:
             print("Invalid command.")
             self.interface()
 
-        cmd_n, arg = cmd[0], cmd[1].strip()
+        cmd_n, arg = cmd[0].strip(), cmd[1].strip()
 
-        if cmd_n == '1':
-            search.isbn(self.conn, arg)
-        elif cmd_n == '2':
-            search.title(self.conn, arg)
-        elif cmd_n == '3':
-            search.writer(self.conn, arg)
-        else:
-            search.publisher(self.conn, arg)
+
+        query = """
+        SELECT *
+        FROM book_info NATURAL LEFT OUTER JOIN storage NATURAL JOIN writes
+        WHERE"""
+        if (cmd_n == '1'):
+            query += " ISBN = %s"
+        elif (cmd_n == '2'):
+            query += " title = %s"
+        elif (cmd_n == '3'):
+            query += " writer = %s"
+        elif (cmd_n == '4'):
+            query += " publisher = %s"
+        print(arg)
+        curr = self.conn.cursor()
+        curr.execute(query, (arg,))
+        books = curr.fetchall()
+        print(books)
+        for book in books:
+            print(book)
+        curr.close()
 
     def restock(self):
         pass

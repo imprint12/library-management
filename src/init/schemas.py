@@ -21,8 +21,15 @@ def create_tables(curr):
         CREATE TABLE book_info(
             ISBN VARCHAR(20) PRIMARY KEY ,
             title VARCHAR(50),
-            writer VARCHAR(50),
             publisher VARCHAR(50)
+        )
+    """)
+
+    curr.execute("""
+        CREATE TABLE writes(
+            ISBN VARCHAR REFERENCES book_info ,
+            writer VARCHAR(50),
+            PRIMARY KEY(ISBN, writer)
         )
     """)
 
@@ -78,15 +85,15 @@ def create_tables(curr):
         )
     """)
 
+
 def create_auth(curr):
     curr.execute("""
         CREATE ROLE employee;
         CREATE ROLE admin;
     """)
 
-
-    curr.execute("GRANT ALL PRIVILEGES ON DATABASE library TO admin;");
-    curr.execute("GRANT ALL ON ALL TABLES IN SCHEMA public TO admin;");
+    curr.execute("GRANT ALL PRIVILEGES ON DATABASE library TO admin;")
+    curr.execute("GRANT ALL ON ALL TABLES IN SCHEMA public TO admin;")
 
     curr.execute("""
         CREATE POLICY lib_update_policy ON employee FOR UPDATE TO employee
