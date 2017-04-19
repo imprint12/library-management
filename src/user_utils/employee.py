@@ -1,3 +1,4 @@
+from datetime import datetime
 
 
 class Employee:
@@ -131,12 +132,12 @@ class Employee:
     def restock(self):
         isbn = input("Enter the ISBN of the book that need to be restocked: ")
         curr = self.conn.cursor()
-        num = int(input("How many books to order? "))
-        price = int(input("What's the price of one book? "))
-
-        total_price = num * price
 
         try:
+            num = int(input("How many books to order? "))
+            price = int(input("What's the price of one book? "))
+
+            total_price = num * price
             curr.execute("""
             SELECT max(order_no)
             FROM restock_order;
@@ -146,18 +147,71 @@ class Employee:
                 max_no = 0
             curr.execute("""
             INSERT INTO restock_order VALUES
-            (%s, %s, %s, %s, 'nonpaid', %s)
+            (%s, %s, %s, %s, 'unpaid', %s)
             """, (max_no + 1, isbn, num, total_price, self.username))
             self.conn.commit()
 
         except Exception as e:
-            print("Error occured")
-            raise e
+            print("Error occured.")
 
         curr.close()
 
     def pay(self):
-        pass
+        curr = self.conn.cursor()
+        try:
+            curr.execute("SELECT * FROM restock_order WHERE state = 'unpaid'")
+            orders = curr.fetchall()
+            if orders == []:
+                print("No order is needed to be paid.")
+                return
+            print("These are the unpaid orders:\n")
+            for order in orders:
+                print("Order number: " + str(order[0]))
+                print("ISBN: " + order[1])
+                print("Book number: " + str(order[2]))
+                print("Total Price: " + str(order[3]))
+                print("Ordered by: " + str(order[5]) + "\n")
+
+            command = input("\nEnter the order number to pay: ").strip()
+            if not command.isdigit():
+                print("Invalid input.")
+                return
+            command = int(command)
+            if command not in [o[0] for o in orders]:
+                print("Invalid input.")
+                return
+
+            curr.execute("""
+            SELECT max(bill_no)
+            FROM payment_bill;
+            """)
+            max_no = curr.fetchone()[0]
+            if not max_no:
+                max_no = 0
+
+            query = """
+            BEGIN;
+            UPDATE restock_order
+            SET state = 'paid'
+            WHERE order_no = {};
+
+            INSERT INTO payment_bill
+            VALUES ({}, %s, {}, %s);
+
+            INSERT INTO restock_pay
+            VALUES ({}, {});
+
+            COMMIT;
+            """.format(command, max_no + 1, order[3], command, max_no + 1)
+
+            order = [o for o in orders if o[0] == command][0]
+            args = (datetime.now(), self.username)
+            curr.execute(query, args)
+
+        except Exception as e:
+            print("Error occured.")
+
+        curr.close()
 
     def put_books(self):
         pass
