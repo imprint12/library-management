@@ -9,7 +9,8 @@ while True:
     try:
         username = input('Username: ')
         password = getpass.getpass('Password: ')
-        conn = psycopg2.connect(dbname='library', user=username, password=password)
+        conn = psycopg2.connect(
+            dbname='library', user=username, password=password)
         break
 
     except psycopg2.OperationalError:
@@ -34,7 +35,6 @@ if is_admin:
 else:
     emply = Employee(conn, username)
     emply.interface()
-
 
 
 conn.close()

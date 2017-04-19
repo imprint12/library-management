@@ -98,10 +98,13 @@ class Employee:
 
         command = input("Command: ")
         cmd = command.split('.')
+
         if len(cmd) != 2 or not('1' <= cmd[0] <= '4'):
             print("Invalid command.")
             return
         cmd_n, arg = ord(cmd[0].strip()) - ord('0'), cmd[1].strip().lower()
+        if cmd_n == 2:
+            arg = list(map(lambda x: x.strip(), arg.split(',')))
 
         if cmd_n == 4:
             try:
@@ -129,11 +132,34 @@ class Employee:
 
         curr.close()
 
+    def add_book_info():
+        isbn = input("ISBN: ")
+        writers = input("Writers(split by commas): ")
+        publisher = input("Publisher: ")
+
+        writers = list(map(lambda x: x.strip(), writers.split(',')))
+
+        try:
+            curr = self.conn.cursor()
+            curr.execute("INSERT INTO book_info VALUES (%s, %s, %s)",
+                         isbn, writers, publisher)
+        except Exception as e:
+            print("Error occured when adding a book info.")
+        curr.close()
+
     def restock(self):
         isbn = input("Enter the ISBN of the book that need to be restocked: ")
         curr = self.conn.cursor()
 
         try:
+
+            curr.execute("SELECT %s in (SELECT ISBN from book_info);")
+            in_library = curr.fetchone()[0]
+            if not in_library:
+                print("This kind of books is currently not in the library.")
+                print("You need to give information on it to order the books.")
+                self.add_book_info()
+
             num = int(input("How many books to order? "))
             price = int(input("What's the price of one book? "))
 
