@@ -8,31 +8,32 @@ class Employee:
         self.username = username
 
     def interface(self):
-        print("Welcome, {}!".format(self.username))
-        print()
-        print()
-        print("q. Quit.")
-        print("1. Search for books.")
-        print("2. Change information of books.")
-        print("3. Restock.")
-        print("4. Pay for a restocking bill.")
-        print("5. Put arrived books on shelf.")
-        print("6. Selling books.")
-        print()
+        while True:
+            print("Welcome, {}!".format(self.username))
+            print()
+            print()
+            print("q. Quit.")
+            print("1. Search for books.")
+            print("2. Change information of books.")
+            print("3. Restock.")
+            print("4. Pay for a restocking bill.")
+            print("5. Put arrived books on shelf.")
+            print("6. Selling books.")
+            print()
 
-        command = input("Enter command: ")
-        if (command == "q"):
-            conn.close()
-            exit(0)
-        if (command == ""):
-            print("Empty command.")
-            self.interface()
+            command = input("Enter command: ")
+            if (command == "q"):
+                conn.close()
+                exit(0)
+            if (command == ""):
+                print("Empty command.")
+                continue
 
-        command_ord = ord(command[0])
-        if not 1 <= ord(command_ord) - ord('0') <= 6:
-            print("Invalid command.")
-            self.interface()
-        command_num = ord(command_ord) - ord('0') + 1
+            command_ord = ord(command[0])
+            if not 1 <= ord(command_ord) - ord('0') <= 6:
+                print("Invalid command.")
+                continue
+            command_num = ord(command_ord) - ord('0') + 1
 
     def search(self):
 
@@ -48,7 +49,7 @@ class Employee:
         cmd = command.split('.')
         if len(cmd) != 2 or not('1' <= cmd[0] <= '4'):
             print("Invalid command.")
-            self.interface()
+            return
 
         cmd_n, arg = cmd[0].strip(), cmd[1].strip().lower()
 
@@ -99,7 +100,7 @@ class Employee:
         cmd = command.split('.')
         if len(cmd) != 2 or not('1' <= cmd[0] <= '4'):
             print("Invalid command.")
-            self.interface()
+            return
         cmd_n, arg = ord(cmd[0].strip()) - ord('0'), cmd[1].strip().lower()
 
         if cmd_n == 4:
@@ -109,11 +110,10 @@ class Employee:
                 set price = %s
                 WHERE ISBN = %s
                 """, (arg, isbn))
-                self.conn.commit()
-            except Exception as e:
+                conn.commit()
+            except:
                 print("Update Error!")
-                print(e)
-                self.interface()
+
         else:
             query = """
             UPDATE book_info
@@ -126,8 +126,8 @@ class Employee:
                 self.conn.commit()
             except:
                 print("Update Error!")
-                self.interface()
 
+        curr.close()
 
 
     def pay(self):
