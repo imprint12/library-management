@@ -17,7 +17,7 @@ class Admin(Employee):
             print("6. Selling books.")
             print()
 
-            command = input("Enter command: ")
+            command = input("Enter command: ").strip()
             if (command == ""):
                 print("Empty command.")
                 continue

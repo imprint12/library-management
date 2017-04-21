@@ -1,5 +1,42 @@
 from datetime import datetime
 
+def print_books(books):
+    for book in books:
+        print("ISBN: " + book[0])
+        print("Title: " + book[1].title())
+        print("Writers:", end='')
+        for wt in book[2]:
+            print(' ' + wt.title(), end=',')
+        print("\b ")
+        print("Publisher: " + book[3])
+        print("Price: " + str(book[4]))
+        print("Storage number: " + str(book[5]))
+    print()
+
+def print_orders(orders, info):
+    print("These are the " + info + " orders:\n")
+    for order in orders:
+        print("Order number: " + str(order[0]))
+        print("ISBN: " + order[1])
+        print("Book number: " + str(order[2]))
+        print("Total Price: " + str(order[3]))
+        print("Ordered by: " + str(order[5]) + "\n")
+
+def parse_command(command, lower_bound, upper_bound):
+    cmd = list(map(lambda s: s.strip(), command.split('.'))
+    valid = False
+
+    cmd_n = ord(cmd[0]) - ord('0')
+
+    if cmd[0] == q or lower_bound <= cmd_n <= upper_bound:
+        valid = True
+
+    cmd_arg = None
+    if len(cmd) > 1:
+        if ',' in cmd[1] > 1:
+            cmd_arg = cmd[1].split(',')
+        else:
+            cmd_arg = cmd[1]
 
 class Employee:
     """docstring for Librarian."""
@@ -73,18 +110,10 @@ class Employee:
             curr.execute(query, (arg,))
             books = curr.fetchall()
 
+            print_books(books)
+
             print("\nSearch result:\n")
-            for book in books:
-                print("ISBN: " + book[0])
-                print("Title: " + book[1].title())
-                print("Writers:", end='')
-                for wt in book[2]:
-                    print(' ' + wt.title(), end=',')
-                print("\b ")
-                print("Publisher: " + book[3])
-                print("Price: " + str(book[4]))
-                print("Storage number: " + str(book[5]))
-            print()
+
         finally:
             curr.close()
 
@@ -199,13 +228,8 @@ class Employee:
             if orders == []:
                 print("No order is needed to be paid.")
                 return
-            print("These are the unpaid orders:\n")
-            for order in orders:
-                print("Order number: " + str(order[0]))
-                print("ISBN: " + order[1])
-                print("Book number: " + str(order[2]))
-                print("Total Price: " + str(order[3]))
-                print("Ordered by: " + str(order[5]) + "\n")
+
+            print_orders(orders, "unpaid")
 
             command = input("\nEnter the order number to pay: ").strip()
             if not command.isdigit():
@@ -261,13 +285,7 @@ class Employee:
             if orders == []:
                 print("No books are needed to be put on shelf.")
                 return
-            print("These are the paid orders:\n")
-            for order in orders:
-                print("Order number: " + str(order[0]))
-                print("ISBN: " + order[1])
-                print("Book number: " + str(order[2]))
-                print("Total Price: " + str(order[3]))
-                print("Ordered by: " + str(order[5]) + "\n")
+            print_orders(orders, "paid")
 
             command = input("\nEnter the order number to pay: ").strip()
             if not command.isdigit():
@@ -298,7 +316,7 @@ class Employee:
         except Exception as e:
             raise e
         finally:
-            curr.close
+            curr.close()
 
     def sell(self):
         pass
