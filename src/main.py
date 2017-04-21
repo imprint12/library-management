@@ -32,9 +32,11 @@ curr.close()
 if is_admin:
     adm = Admin(conn, username)
     adm.interface()
+
 else:
     emply = Employee(conn, username)
     emply.interface()
+
 
 
 conn.close()

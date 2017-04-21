@@ -41,48 +41,52 @@ class Employee:
         print("\n1. (ISBN NUMBER)")
         print("2. (TITLE)")
         print("3. (WRITER'S NAME)")
-        print("4. (PUBLISHER)\n\n")
+        print("4. (PUBLISHER)")
+        print("5. All books\n\n")
 
         print("Please enter one of the commands above.")
         print("For example: 2. Introduction to Algorithms\n")
         command = input("Command: ")
 
         cmd = command.split('.')
-        if len(cmd) != 2 or not('1' <= cmd[0] <= '4'):
+        if len(cmd) != 2 or not('1' <= cmd[0] <= '5'):
             print("Invalid command.")
             return
 
         cmd_n, arg = cmd[0].strip(), cmd[1].strip().lower()
+        try:
+            query = """
+            SELECT *
+            FROM book_info NATURAL LEFT OUTER JOIN storage
+            WHERE"""
+            if (cmd_n == '1'):
+                query += " ISBN = %s"
+            elif (cmd_n == '2'):
+                query += " title = %s"
+            elif (cmd_n == '3'):
+                query += " %s = ANY (writer)"
+            elif (cmd_n == '4'):
+                query += " publisher = %s"
+            elif (cmd_n == '5'):
+                query += " true"
+            curr = self.conn.cursor()
+            curr.execute(query, (arg,))
+            books = curr.fetchall()
 
-        query = """
-        SELECT *
-        FROM book_info NATURAL LEFT OUTER JOIN storage
-        WHERE"""
-        if (cmd_n == '1'):
-            query += " ISBN = %s"
-        elif (cmd_n == '2'):
-            query += " title = %s"
-        elif (cmd_n == '3'):
-            query += " %s = ANY (writer)"
-        elif (cmd_n == '4'):
-            query += " publisher = %s"
-        curr = self.conn.cursor()
-        curr.execute(query, (arg,))
-        books = curr.fetchall()
-
-        print("\nSearch result:\n")
-        for book in books:
-            print("ISBN: " + book[0])
-            print("Title: " + book[1].title())
-            print("Writers:", end='')
-            for wt in book[2]:
-                print(' ' + wt.title(), end=',')
-            print("\b ")
-            print("Publisher: " + book[3])
-            print("Price: " + str(book[4]))
-            print("Storage number: " + str(book[5]))
+            print("\nSearch result:\n")
+            for book in books:
+                print("ISBN: " + book[0])
+                print("Title: " + book[1].title())
+                print("Writers:", end='')
+                for wt in book[2]:
+                    print(' ' + wt.title(), end=',')
+                print("\b ")
+                print("Publisher: " + book[3])
+                print("Price: " + str(book[4]))
+                print("Storage number: " + str(book[5]))
             print()
-        curr.close()
+        finally:
+            curr.close()
 
     def change_info(self):
         isbn = input("Enter the ISBN of the book that need to be changed: ")
@@ -104,7 +108,7 @@ class Employee:
             return
         cmd_n, arg = ord(cmd[0].strip()) - ord('0'), cmd[1].strip().lower()
         if cmd_n == 2:
-            arg = list(map(lambda x: x.strip(), arg.split(',')))
+            arg = list(map(lambda x: x.strip().lower(), arg.split(',')))
 
         if cmd_n == 4:
             try:
@@ -116,6 +120,8 @@ class Employee:
                 conn.commit()
             except:
                 print("Update Error!")
+            finally:
+                curr.close()
 
         else:
             query = """
@@ -129,15 +135,15 @@ class Employee:
                 self.conn.commit()
             except:
                 print("Update Error!")
-
-        curr.close()
+            finally:
+                curr.close()
 
     def add_book_info():
         isbn = input("ISBN: ")
         writers = input("Writers(split by commas): ")
         publisher = input("Publisher: ")
 
-        writers = list(map(lambda x: x.strip(), writers.split(',')))
+        writers = list(map(lambda x: x.strip().lower(), writers.split(',')))
 
         try:
             curr = self.conn.cursor()
@@ -145,15 +151,17 @@ class Employee:
                          isbn, writers, publisher)
         except Exception as e:
             print("Error occured when adding a book info.")
-        curr.close()
+        finally:
+            curr.close()
 
     def restock(self):
-        isbn = input("Enter the ISBN of the book that need to be restocked: ")
+        isbn = input(
+            "Enter the ISBN of the book that need to be restocked: ").strip()
         curr = self.conn.cursor()
 
         try:
 
-            curr.execute("SELECT %s in (SELECT ISBN from book_info);")
+            curr.execute("SELECT %s in (SELECT ISBN from book_info);", (isbn,))
             in_library = curr.fetchone()[0]
             if not in_library:
                 print("This kind of books is currently not in the library.")
@@ -178,9 +186,10 @@ class Employee:
             self.conn.commit()
 
         except Exception as e:
+            raise e
             print("Error occured.")
-
-        curr.close()
+        finally:
+            curr.close()
 
     def pay(self):
         curr = self.conn.cursor()
@@ -236,11 +245,60 @@ class Employee:
 
         except Exception as e:
             print("Error occured.")
-
-        curr.close()
+        finally:
+            curr.close()
 
     def put_books(self):
-        pass
+        curr = self.conn.cursor()
+        try:
+            curr.execute("""
+            SELECT *
+            FROM restock_order
+            WHERE state = 'paid'
+            """)
+            orders = curr.fetchall()
+
+            if orders == []:
+                print("No books are needed to be put on shelf.")
+                return
+            print("These are the paid orders:\n")
+            for order in orders:
+                print("Order number: " + str(order[0]))
+                print("ISBN: " + order[1])
+                print("Book number: " + str(order[2]))
+                print("Total Price: " + str(order[3]))
+                print("Ordered by: " + str(order[5]) + "\n")
+
+            command = input("\nEnter the order number to pay: ").strip()
+            if not command.isdigit():
+                print("Invalid input.")
+                return
+            command = int(command)
+            if command not in [o[0] for o in orders]:
+                print("Invalid order number.")
+                return
+
+            order = [o for o in orders if o[0] == command][0]
+
+            query = """
+            BEGIN;
+            UPDATE restock_order
+            SET state = 'put'
+            WHERE order_no = {};
+
+            UPDATE storage
+            SET num = num + {}
+            WHERE isbn = %s;
+
+            COMMIT;
+            """.format(order[0], order[2])
+
+            curr.execute(query, (order[1],))
+
+        except Exception as e:
+            raise e
+        finally:
+            curr.close
 
     def sell(self):
         pass
