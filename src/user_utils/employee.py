@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 def print_books(books):
     for book in books:
         print("ISBN: " + book[0])
@@ -13,6 +14,7 @@ def print_books(books):
         print("Storage number: " + str(book[5]))
     print()
 
+
 def print_orders(orders, info):
     print("These are the " + info + " orders:\n")
     for order in orders:
@@ -22,13 +24,15 @@ def print_orders(orders, info):
         print("Total Price: " + str(order[3]))
         print("Ordered by: " + str(order[5]) + "\n")
 
+
 def parse_command(command, lower_bound, upper_bound):
-    cmd = list(map(lambda s: s.strip(), command.split('.'))
+    cmd = list(map(lambda s: s.strip().lower(), command.split('.')))
+
     valid = False
 
     cmd_n = ord(cmd[0]) - ord('0')
 
-    if cmd[0] == q or lower_bound <= cmd_n <= upper_bound:
+    if cmd[0] == 'q' or lower_bound <= cmd_n <= upper_bound:
         valid = True
 
     cmd_arg = None
@@ -37,6 +41,9 @@ def parse_command(command, lower_bound, upper_bound):
             cmd_arg = cmd[1].split(',')
         else:
             cmd_arg = cmd[1]
+
+    return valid, cmd_n, cmd_arg
+
 
 class Employee:
     """docstring for Librarian."""
@@ -85,26 +92,31 @@ class Employee:
         print("For example: 2. Introduction to Algorithms\n")
         command = input("Command: ")
 
-        cmd = command.split('.')
-        if len(cmd) != 2 or not('1' <= cmd[0] <= '5'):
-            print("Invalid command.")
+        #cmd = command.split('.')
+        # if len(cmd) != 2 or not('1' <= cmd[0] <= '5'):
+        #    print("Invalid command.")
+        #    return
+
+        #cmd_n, arg = cmd[0].strip(), cmd[1].strip().lower()
+        valid, cmd_n, arg = parse_command(command, 1, 5)
+        if not valid:
+            print("Invalid input.")
             return
 
-        cmd_n, arg = cmd[0].strip(), cmd[1].strip().lower()
         try:
             query = """
             SELECT *
             FROM book_info NATURAL LEFT OUTER JOIN storage
             WHERE"""
-            if (cmd_n == '1'):
+            if (cmd_n == 1):
                 query += " ISBN = %s"
-            elif (cmd_n == '2'):
+            elif (cmd_n == 2):
                 query += " title = %s"
-            elif (cmd_n == '3'):
+            elif (cmd_n == 3):
                 query += " %s = ANY (writer)"
-            elif (cmd_n == '4'):
+            elif (cmd_n == 4):
                 query += " publisher = %s"
-            elif (cmd_n == '5'):
+            elif (cmd_n == 5):
                 query += " true"
             curr = self.conn.cursor()
             curr.execute(query, (arg,))
@@ -113,6 +125,10 @@ class Employee:
             print_books(books)
 
             print("\nSearch result:\n")
+
+        except Exception as e:
+            print("Error occured when searching.")
+            print(e)
 
         finally:
             curr.close()
@@ -149,6 +165,7 @@ class Employee:
                 conn.commit()
             except:
                 print("Update Error!")
+                print(e)
             finally:
                 curr.close()
 
@@ -164,6 +181,7 @@ class Employee:
                 self.conn.commit()
             except:
                 print("Update Error!")
+                print(e)
             finally:
                 curr.close()
 
@@ -180,6 +198,7 @@ class Employee:
                          isbn, writers, publisher)
         except Exception as e:
             print("Error occured when adding a book info.")
+            print(e)
         finally:
             curr.close()
 
@@ -215,8 +234,8 @@ class Employee:
             self.conn.commit()
 
         except Exception as e:
-            raise e
             print("Error occured.")
+            print(e)
         finally:
             curr.close()
 
@@ -269,6 +288,7 @@ class Employee:
 
         except Exception as e:
             print("Error occured.")
+            print(e)
         finally:
             curr.close()
 
@@ -314,9 +334,57 @@ class Employee:
             curr.execute(query, (order[1],))
 
         except Exception as e:
-            raise e
+            print("Error occured.")
+            print(e)
         finally:
             curr.close()
 
     def sell(self):
-        pass
+        curr = self.conn.cursor()
+        try:
+            curr.execute("""
+            SELECT max(bill_no)
+            FROM revenue_bill;
+            """)
+            max_no = curr.fetchone()[0]
+            if not max_no:
+                max_no = 0
+            isbn = input(
+                "Enter the ISBN of the book that is going to be selled: ")
+            number = int(
+                input("Enter the number of the book that is going to be selled: "))
+
+            curr.execute("SELECT * FROM storage WHERE ISBN=%s", (isbn,))
+            book_storeage = curr.fetchone()
+
+            if book_storeage == None:
+                raise ValueError("This book doesn't exist in the library.")
+
+            if book_storeage[2] < number:
+                raise ValueError("There not enough books to sell.")
+
+            total_price = book_storeage[1] * number
+
+            query = """
+            BEGIN;
+            UPDATE storage
+            SET num = num - {}
+            WHERE ISBN = %s;
+
+            INSERT INTO revenue_bill
+            VALUES (%s, %s, {}, %s);
+
+            INSERT INTO revenue_storage
+            VALUES (%s, %s, {});
+
+            COMMIT;
+            """.format(number, total_price, number)
+
+            curr.execute(query, (isbn, max_no + 1, datetime.now(),
+                                 self.username, max_no + 1, isbn))
+
+        except Exception as e:
+            print("Error occured.")
+            print(e)
+        finally:
+            curr.close()
