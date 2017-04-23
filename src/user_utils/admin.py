@@ -1,5 +1,8 @@
 from .employee import Employee
+from .employee import parse_command
 from . import search
+
+q_ord = ord('q') - ord('0')
 
 class Admin(Employee):
 
@@ -15,32 +18,42 @@ class Admin(Employee):
             print("4. Pay for a restocking bill.")
             print("5. Put arrived books on shelf.")
             print("6. Selling books.")
-            print()
+            print("7. Show transactions' records。\n")
 
-            command = input("Enter command: ").strip()
-            if (command == ""):
-                print("Empty command.")
-                continue
+            command = input("Enter command: ")
+            # if (command == ""):
+            #    print("Empty command.")
+            #    continue
+#
+            # if (command[0] == "q"):
+            #    self.conn.close()
+            #    return
+#
+            #command_ord = ord(command[0])
+            # if not 1 <= command_ord - ord('0') <= 7:
+            #    print("Invalid command.")
+            #    self.interface()
+            #cmd_n = command_ord - ord('0')
 
-            if (command[0] == "q"):
-                self.conn.close()
+            valid, cmd_n, cmd_arg = parse_command(command, 1, 7)
+
+            if not valid:
+                print("Invalid input.")
+                return
+            if cmd_n == q_ord:
                 return
 
-            command_ord = ord(command[0])
-            if not 1 <= command_ord - ord('0') <= 6:
-                print("Invalid command.")
-                self.interface()
-            command_num = command_ord - ord('0')
-
-            if command_num == 1:
+            if cmd_n == 1:
                 self.search()
-            elif command_num == 2:
+            elif cmd_n == 2:
                 self.change_info()
-            elif command_num == 3:
+            elif cmd_n == 3:
                 self.restock()
-            elif command_num == 4:
+            elif cmd_n == 4:
                 self.pay()
-            elif command_num == 5:
+            elif cmd_n == 5:
                 self.put_books()
-            else:
+            elif cmd_n == 6:
                 self.sell()
+            else:
+                self.show_transactions()

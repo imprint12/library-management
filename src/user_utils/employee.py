@@ -1,5 +1,9 @@
 from datetime import datetime
 
+q_ord = ord('q') - ord('0')
+
+# A helper function to print info of books.
+
 
 def print_books(books):
     for book in books:
@@ -14,6 +18,8 @@ def print_books(books):
         print("Storage number: " + str(book[5]))
     print()
 
+# A helper function to print info of some orders.
+
 
 def print_orders(orders, info):
     print("These are the " + info + " orders:\n")
@@ -22,16 +28,29 @@ def print_orders(orders, info):
         print("ISBN: " + order[1])
         print("Book number: " + str(order[2]))
         print("Total Price: " + str(order[3]))
-        print("Ordered by: " + str(order[5]) + "\n")
+        print("Ordered by: " + order[5] + "\n")
+
+
+# A helper function to print info of bills.
+def print_bills(bills, info):
+    print("These are the " + info + " bills:\n")
+    for bill in bills:
+        print("Bill number: " + str(bill[0]))
+        print("Date: " + str(bill[1]))
+        print("Total amount: " + str(bill[2]))
+        print("Operated by: " + bill[3] + "\n")
+
+
+# Parse and return whether the user input is valid and other infomations.
 
 
 def parse_command(command, lower_bound, upper_bound):
     cmd = list(map(lambda s: s.strip().lower(), command.split('.')))
-
     valid = False
-
     cmd_n = ord(cmd[0]) - ord('0')
 
+    if command == "":
+        return False, None, None
     if cmd[0] == 'q' or lower_bound <= cmd_n <= upper_bound:
         valid = True
 
@@ -43,6 +62,16 @@ def parse_command(command, lower_bound, upper_bound):
             cmd_arg = cmd[1]
 
     return valid, cmd_n, cmd_arg
+
+# Parse user input data string and return a python datetime object.
+
+
+def parse_date(arg):
+    args = arg.split('-')
+    if len(args) != 3:
+        raise ValueError("Wrong date input.")
+    args = [int(x) for x in args]
+    return (datetime(args[0], args[1], args[2]))
 
 
 class Employee:
@@ -75,10 +104,23 @@ class Employee:
                 continue
 
             command_ord = ord(command[0])
-            if not 1 <= ord(command_ord) - ord('0') <= 6:
+            if not 1 <= command_ord - ord('0') <= 6:
                 print("Invalid command.")
-                continue
-            command_num = ord(command_ord) - ord('0') + 1
+                self.interface()
+            command_num = command_ord - ord('0')
+
+            if command_num == 1:
+                self.search()
+            elif command_num == 2:
+                self.change_info()
+            elif command_num == 3:
+                self.restock()
+            elif command_num == 4:
+                self.pay()
+            elif command_num == 5:
+                self.put_books()
+            else:
+                self.sell()
 
     def search(self):
 
@@ -99,8 +141,11 @@ class Employee:
 
         #cmd_n, arg = cmd[0].strip(), cmd[1].strip().lower()
         valid, cmd_n, arg = parse_command(command, 1, 5)
+
         if not valid:
             print("Invalid input.")
+            return
+        if cmd_n == q_ord:
             return
 
         try:
@@ -386,5 +431,58 @@ class Employee:
         except Exception as e:
             print("Error occured.")
             print(e)
+        finally:
+            curr.close()
+
+    def show_transactions(self):
+        print("Show all bills or specify a time interval")
+        print("1.Show all bills.")
+        print("2.Specify a time inteval.")
+
+        valid, cmd_n, _ = parse_command(input("Command: "), 1, 2)
+
+        if not valid:
+            print("Invalid input.")
+            return
+        if cmd_n == 'q':
+            return
+
+        curr = self.conn.cursor()
+        try:
+            if cmd_n == 2:
+                start = input("Enter the start date(YYYY-MM-DD): ")
+                end = input("Enter the end date(YYYY-MM-DD): ")
+                date_query = " WHERE dt BETWEEN %s AND %s;"
+                start_date = parse_date(start)
+                end_date = parse_date(end)
+
+            pay_query = """
+            SELECT *
+            FROM payment_bill
+            """
+            rev_query = """
+            SELECT *
+            FROM revenue_bill
+            """
+            if cmd_n == 2:
+                pay_query += date_query
+                rev_query += date_query
+                curr.execute(pay_query, (start, end))
+                pay_bills = curr.fetchall()
+                curr.execute(rev_query, (start, end))
+                rev_bills = fetchall()
+            else:
+                curr.execute(pay_query)
+                pay_bills = curr.fetchall()
+                curr.execute(rev_query)
+                rev_bills = curr.fetchall()
+
+            print_bills(pay_bills, 'payment')
+            print_bills(rev_bills, 'revenue')
+
+        except Exception as e:
+            print("Error occured.")
+            print(e)
+            raise e
         finally:
             curr.close()
