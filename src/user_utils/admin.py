@@ -1,8 +1,8 @@
 from .employee import Employee
-from .employee import parse_command
+from .helper_functions import *
 from . import search
 
-q_ord = ord('q') - ord('0')
+
 
 class Admin(Employee):
 
