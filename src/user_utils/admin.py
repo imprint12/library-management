@@ -1,13 +1,19 @@
 from .employee import Employee
 from .helper_functions import *
-from . import search
-
-
+import os
 
 class Admin(Employee):
 
+    def __init__(self, conn, username):
+        self.conn = conn
+        self.username = username
+        self.group = 'admin'
+
+
     def interface(self):
         while True:
+            os.system('clear')
+
             print("\n--------------------------------------------------")
             print("\nWelcome, {}!\n".format(self.username))
 
@@ -18,7 +24,8 @@ class Admin(Employee):
             print("4. Pay for a restocking bill.")
             print("5. Put arrived books on shelf.")
             print("6. Selling books.")
-            print("7. Show transactions' records。\n")
+            print("7. Show transactions' records.")
+            print("8. Manage the information of yourself.\n")
 
             command = input("Enter command: ")
             # if (command == ""):
@@ -35,7 +42,7 @@ class Admin(Employee):
             #    self.interface()
             #cmd_n = command_ord - ord('0')
 
-            valid, cmd_n, cmd_arg = parse_command(command, 1, 7)
+            valid, cmd_n, cmd_arg = parse_command(command, 1, 8)
 
             if not valid:
                 print("Invalid input.")
@@ -55,5 +62,9 @@ class Admin(Employee):
                 self.put_books()
             elif cmd_n == 6:
                 self.sell()
-            else:
+            elif cmd_n == 7:
                 self.show_transactions()
+            elif cmd_n == 8:
+                self.manage_info()
+            else:
+                self.admin_manage()

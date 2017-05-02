@@ -1,3 +1,4 @@
+from datetime import datetime
 q_ord = ord('q') - ord('0')
 
 # A helper function to print info of books.
@@ -54,7 +55,7 @@ def parse_command(command, lower_bound, upper_bound):
 
     cmd_arg = None
     if len(cmd) > 1:
-        if ',' in cmd[1] > 1:
+        if ',' in cmd[1]:
             cmd_arg = cmd[1].split(',')
         else:
             cmd_arg = cmd[1]
@@ -70,3 +71,15 @@ def parse_date(arg):
         raise ValueError("Wrong date input.")
     args = [int(x) for x in args]
     return (datetime(args[0], args[1], args[2]))
+
+
+def print_user_info(info):
+    print("\nUsername: {}".format(info[0]))
+    print("True Name: {}".format(info[1].title()))
+    print("ID: {}".format(info[2]))
+    print("Age: {}".format(info[3]))
+    if info[4] == 'm':
+        gender = 'Male'
+    else:
+        gender = 'Female'
+    print("Gender: {}".format(gender) + "\n")

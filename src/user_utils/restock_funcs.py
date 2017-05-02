@@ -1,9 +1,12 @@
 from .helper_functions import *
+import os
 
-def restock(self):
+
+def restock(user):
+    os.system('clear')
     isbn = input(
         "Enter the ISBN of the book that need to be restocked: ").strip()
-    curr = self.conn.cursor()
+    curr = user.conn.cursor()
 
     try:
 
@@ -12,34 +15,37 @@ def restock(self):
         if not in_library:
             print("This kind of books is currently not in the library.")
             print("You need to give information on it to order the books.")
-            self.add_book_info()
+            user.add_book_info()
 
         num = int(input("How many books to order? "))
         price = int(input("What's the price of one book? "))
 
         total_price = num * price
         curr.execute("""
-      SELECT max(order_no)
-      FROM restock_order;
-      """)
+        SELECT max(order_no)
+        FROM restock_order;
+        """)
         max_no = curr.fetchone()[0]
         if not max_no:
             max_no = 0
         curr.execute("""
-      INSERT INTO restock_order VALUES
-      (%s, %s, %s, %s, 'unpaid', %s)
-      """, (max_no + 1, isbn, num, total_price, self.username))
-        self.conn.commit()
+        INSERT INTO restock_order VALUES
+        (%s, %s, %s, %s, 'unpaid', %s)
+        """, (max_no + 1, isbn, num, total_price, user.username))
+        user.conn.commit()
+        print("\nOperation succeded.")
 
     except Exception as e:
         print("Error occured.")
         print(e)
     finally:
         curr.close()
+        input("Press enter to continue.")
 
 
-def put_books(self):
-    curr = self.conn.cursor()
+def put_books(user):
+    os.system('clear')
+    curr = user.conn.cursor()
     try:
         curr.execute("""
       SELECT *
@@ -65,22 +71,25 @@ def put_books(self):
         order = [o for o in orders if o[0] == command][0]
 
         query = """
-      BEGIN;
-      UPDATE restock_order
-      SET state = 'put'
-      WHERE order_no = {};
+        BEGIN;
+        UPDATE restock_order
+        SET state = 'put'
+        WHERE order_no = {};
 
-      UPDATE storage
-      SET num = num + {}
-      WHERE isbn = %s;
+        UPDATE storage
+        SET num = num + {}
+        WHERE isbn = %s;
 
-      COMMIT;
-      """.format(order[0], order[2])
+        COMMIT;
+        """.format(order[0], order[2])
 
         curr.execute(query, (order[1],))
+        user.conn.commit()
+        print("\nOperation succeded.")
 
     except Exception as e:
         print("Error occured.")
         print(e)
     finally:
         curr.close()
+        input("Press enter to continue.")

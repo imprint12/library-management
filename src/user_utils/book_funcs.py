@@ -1,7 +1,9 @@
 from .helper_functions import *
+import os
 
-def search(self):
 
+def search(user):
+    os.system('clear')
     print("\n1. (ISBN NUMBER)")
     print("2. (TITLE)")
     print("3. (WRITER'S NAME)")
@@ -41,13 +43,11 @@ def search(self):
             query += " publisher = %s"
         elif (cmd_n == 5):
             query += " true"
-        curr = self.conn.cursor()
+        curr = user.conn.cursor()
         curr.execute(query, (arg,))
         books = curr.fetchall()
-
-        print_books(books)
-
         print("\nSearch result:\n")
+        print_books(books)
 
     except Exception as e:
         print("Error occured when searching.")
@@ -55,10 +55,13 @@ def search(self):
 
     finally:
         curr.close()
+        input("\nPress enter to continue.")
 
-def change_info(self):
+
+def change_info(user):
+    os.system('clear')
     isbn = input("Enter the ISBN of the book that need to be changed: ")
-    curr = self.conn.cursor()
+    curr = user.conn.cursor()
 
     print("Enter one of the following commands:")
     print("1. (new book name)")
@@ -99,16 +102,20 @@ def change_info(self):
         WHERE ISBN = %s
         """
         try:
-            print(query.format(command_table[cmd_n]))
+            #print(query.format(command_table[cmd_n]))
             curr.execute(query.format(command_table[cmd_n]), (arg, isbn))
-            self.conn.commit()
+            user.conn.commit()
+            print("Changing succeded.")
         except:
             print("Update Error!")
             print(e)
         finally:
             curr.close()
+            input("Press enter to continue.")
+
 
 def add_book_info():
+    os.system('clear')
     isbn = input("ISBN: ")
     writers = input("Writers(split by commas): ")
     publisher = input("Publisher: ")
@@ -116,11 +123,15 @@ def add_book_info():
     writers = list(map(lambda x: x.strip().lower(), writers.split(',')))
 
     try:
-        curr = self.conn.cursor()
+        curr = user.conn.cursor()
         curr.execute("INSERT INTO book_info VALUES (%s, %s, %s)",
                      isbn, writers, publisher)
+        user.conn.commit()
+        print("Adding succeded.")
+
     except Exception as e:
         print("Error occured when adding a book info.")
         print(e)
     finally:
         curr.close()
+        input("Press enter to continue.")

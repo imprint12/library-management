@@ -1,7 +1,10 @@
 from .helper_functions import *
+from datetime import datetime
+import os
 
 
-def show_transactions(self):
+def show_transactions(user):
+    os.system('clear')
     print("Show all bills or specify a time interval")
     print("1.Show all bills.")
     print("2.Specify a time inteval.")
@@ -14,7 +17,7 @@ def show_transactions(self):
     if cmd_n == 'q':
         return
 
-    curr = self.conn.cursor()
+    curr = user.conn.cursor()
     try:
         if cmd_n == 2:
             start = input("Enter the start date(YYYY-MM-DD): ")
@@ -37,15 +40,21 @@ def show_transactions(self):
             curr.execute(pay_query, (start, end))
             pay_bills = curr.fetchall()
             curr.execute(rev_query, (start, end))
-            rev_bills = fetchall()
+            rev_bills = curr.fetchall()
         else:
             curr.execute(pay_query)
             pay_bills = curr.fetchall()
             curr.execute(rev_query)
             rev_bills = curr.fetchall()
 
+        total_rev = sum([b[2] for b in rev_bills])
+        total_pay = sum([b[2] for b in pay_bills])
+
         print_bills(pay_bills, 'payment')
         print_bills(rev_bills, 'revenue')
+        print("\nTotal revenue: {}".format(total_rev))
+        print("Total payment: {}".format(total_pay))
+        print("Total balance: {}".format(total_rev - total_pay))
 
     except Exception as e:
         print("Error occured.")
@@ -53,10 +62,12 @@ def show_transactions(self):
         raise e
     finally:
         curr.close()
+        input("\nPress enter to continue")
 
 
-def pay(self):
-    curr = self.conn.cursor()
+def pay(user):
+    os.system('clear')
+    curr = user.conn.cursor()
     try:
         curr.execute("SELECT * FROM restock_order WHERE state = 'unpaid'")
         orders = curr.fetchall()
@@ -68,12 +79,16 @@ def pay(self):
 
         command = input("\nEnter the order number to pay: ").strip()
         if not command.isdigit():
-            print("Invalid input.")
-            return
+            raise ValueError("Invalid input.")
+
         command = int(command)
-        if command not in [o[0] for o in orders]:
-            print("Invalid input.")
-            return
+        order = None
+        for o in orders:
+            if command == o[0]:
+                order = o
+        if not order:
+        #if command not in [o[0] for o in orders]:
+            raise ValueError("Invalid input.")
 
         curr.execute("""
         SELECT max(bill_no)
@@ -99,18 +114,22 @@ def pay(self):
         """.format(command, max_no + 1, order[3], command, max_no + 1)
 
         order = [o for o in orders if o[0] == command][0]
-        args = (datetime.now(), self.username)
+        args = (datetime.now(), user.username)
         curr.execute(query, args)
+        user.conn.commit()
+
+        print("\nPayment succeeded.")
 
     except Exception as e:
         print("Error occured.")
-        print(e)
+        raise e
     finally:
         curr.close()
+        input("Press enter to continue.")
 
 
-def sell(self):
-    curr = self.conn.cursor()
+def sell(user):
+    curr = user.conn.cursor()
     try:
         curr.execute("""
         SELECT max(bill_no)
@@ -151,10 +170,14 @@ def sell(self):
         """.format(number, total_price, number)
 
         curr.execute(query, (isbn, max_no + 1, datetime.now(),
-                             self.username, max_no + 1, isbn))
+                             user.username, max_no + 1, isbn))
+
+        user.conn.commit()
+        print("\nSelling succeeded.")
 
     except Exception as e:
         print("Error occured.")
         print(e)
     finally:
         curr.close()
+        input("Press enter to continue.")

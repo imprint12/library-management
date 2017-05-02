@@ -5,7 +5,8 @@ def create_tables(curr):
             true_name TEXT,
             id INTEGER,
             age INTEGER,
-            gender CHAR
+            gender CHAR,
+            check(gender='m' or gender='f')
         );
 
         CREATE TABLE admin(
@@ -13,7 +14,8 @@ def create_tables(curr):
             true_name TEXT,
             id INTEGER,
             age INTEGER,
-            gender CHAR
+            gender CHAR,
+            check(gender='m' or gender='f')
         )
     """)
 
@@ -67,7 +69,7 @@ def create_tables(curr):
             bill_no INTEGER PRIMARY KEY,
             dt TIMESTAMP,
             total_price NUMERIC(12, 2),
-            username TEXT 
+            username TEXT
     )
     """)
 
