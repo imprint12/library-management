@@ -34,7 +34,7 @@ def manage_info(self):
             change_info(self, 'gender', cmd_arg)
 
     except Exception as e:
-        raise
+        print(e)
     finally:
         curr.close()
         input("\nPress enter to continue.")
@@ -46,7 +46,7 @@ def change_info(self, info, arg):
         query = "UPDATE {} SET {}= WHERE username=%s".format(self.group, info)
         curr.execute(query, (self.username,))
     except Exception as e:
-        raise
+        print(e)
     finally:
         curr.close()
 
@@ -70,6 +70,6 @@ def change_pw(self, pw):
         curr.execute(query, (pw,))
         self.conn.commit()
     except Exception as e:
-        raise
+        print(e)
     finally:
         curr.close()

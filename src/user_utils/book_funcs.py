@@ -23,8 +23,8 @@ def search(user):
     valid, cmd_n, arg = parse_command(command, 1, 5)
 
     if not valid:
-        print("Invalid input.")
-        return
+        raise ValueError("Invalid input.")
+
     if cmd_n == q_ord:
         return
 
@@ -73,65 +73,65 @@ def change_info(user):
 
     command = input("Command: ")
     cmd = command.split('.')
+    try:
+        if len(cmd) != 2 or not('1' <= cmd[0] <= '4'):
+            raise ValueError("Invalid command.")
+        cmd_n, arg = ord(cmd[0].strip()) - ord('0'), cmd[1].strip().lower()
+        if cmd_n == 2:
+            arg = list(map(lambda x: x.strip().lower(), arg.split(',')))
+        if cmd_n == 4:
+            try:
+                curr.execute("""
+                UPDATE storage
+                set price = %s
+                WHERE ISBN = %s
+                """, (arg, isbn))
+                user.conn.commit()
+                print("Changing succeded.")
+            except Exception as e:
+                raise e
 
-    if len(cmd) != 2 or not('1' <= cmd[0] <= '4'):
-        print("Invalid command.")
-        return
-    cmd_n, arg = ord(cmd[0].strip()) - ord('0'), cmd[1].strip().lower()
-    if cmd_n == 2:
-        arg = list(map(lambda x: x.strip().lower(), arg.split(',')))
-
-    if cmd_n == 4:
-        try:
-            curr.execute("""
-            UPDATE storage
-            set price = %s
+        else:
+            query = """
+            UPDATE book_info
+            set {} = %s
             WHERE ISBN = %s
-            """, (arg, isbn))
-            conn.commit()
-        except:
-            print("Update Error!")
-            print(e)
-        finally:
-            curr.close()
-
-    else:
-        query = """
-        UPDATE book_info
-        set {} = %s
-        WHERE ISBN = %s
-        """
-        try:
-            #print(query.format(command_table[cmd_n]))
-            curr.execute(query.format(command_table[cmd_n]), (arg, isbn))
-            user.conn.commit()
-            print("Changing succeded.")
-        except:
-            print("Update Error!")
-            print(e)
-        finally:
-            curr.close()
-            input("Press enter to continue.")
+            """
+            try:
+                # print(query.format(command_table[cmd_n]))
+                curr.execute(query.format(command_table[cmd_n]), (arg, isbn))
+                user.conn.commit()
+                print("Changing succeded.")
+            except Exception as e:
+                raise e
+    except Exception as e:
+        print("Update Error!")
+        print(e)
+    finally:
+        curr.close()
+        input("Press enter to continue.")
 
 
-def add_book_info():
-    os.system('clear')
-    isbn = input("ISBN: ")
+def add_book_info(user, isbn):
+
+    title = input("Title: ").strip().lower()
     writers = input("Writers(split by commas): ")
-    publisher = input("Publisher: ")
+    publisher = input("Publisher: ").strip().lower()
+    price = int(input("Price per book to sell: "))
 
     writers = list(map(lambda x: x.strip().lower(), writers.split(',')))
 
     try:
         curr = user.conn.cursor()
-        curr.execute("INSERT INTO book_info VALUES (%s, %s, %s)",
-                     isbn, writers, publisher)
+        curr.execute("INSERT INTO book_info VALUES (%s, %s, %s,%s)",
+                     (isbn, title, writers, publisher))
+        curr.execute("INSERT INTO storage VALUES(%s,%s, 0)", (isbn, price))
         user.conn.commit()
         print("Adding succeded.")
 
     except Exception as e:
         print("Error occured when adding a book info.")
-        print(e)
+        raise e
     finally:
         curr.close()
         input("Press enter to continue.")

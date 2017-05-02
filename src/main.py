@@ -2,7 +2,9 @@ import getpass
 import psycopg2
 from user_utils.admin import Admin
 from user_utils.employee import Employee
+import os
 
+os.system('clear')
 print('Welcome to the library management software!')
 
 while True:

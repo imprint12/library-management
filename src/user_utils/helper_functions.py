@@ -6,7 +6,7 @@ q_ord = ord('q') - ord('0')
 
 def print_books(books):
     for book in books:
-        print("ISBN: " + book[0])
+        print("\nISBN: " + book[0])
         print("Title: " + book[1].title())
         print("Writers:", end='')
         for wt in book[2]:

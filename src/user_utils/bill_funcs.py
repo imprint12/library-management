@@ -59,7 +59,7 @@ def show_transactions(user):
     except Exception as e:
         print("Error occured.")
         print(e)
-        raise e
+
     finally:
         curr.close()
         input("\nPress enter to continue")
@@ -122,7 +122,7 @@ def pay(user):
 
     except Exception as e:
         print("Error occured.")
-        raise e
+        print(e)
     finally:
         curr.close()
         input("Press enter to continue.")

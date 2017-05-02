@@ -1,4 +1,5 @@
 from .helper_functions import *
+from .book_funcs import add_book_info
 import os
 
 
@@ -15,7 +16,7 @@ def restock(user):
         if not in_library:
             print("This kind of books is currently not in the library.")
             print("You need to give information on it to order the books.")
-            user.add_book_info()
+            add_book_info(user, isbn)
 
         num = int(input("How many books to order? "))
         price = int(input("What's the price of one book? "))

@@ -48,8 +48,8 @@ class Employee:
             valid, cmd_n, cmd_arg = parse_command(command, 1, 8)
 
             if not valid:
-                print("Invalid input.")
-                return
+                raise ValueError("Invalid input.")
+                
             if cmd_n == q_ord:
                 return
 
