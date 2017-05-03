@@ -25,7 +25,7 @@ def admin_manage(user):
         elif cmd_n == 4:
             create_user(user)
         else:
-            delete_user(user)
+            delete_user(user, cmd_arg)
 
     except Exception as e:
         print("Error occurred.")
@@ -151,6 +151,31 @@ def create_user(admin):
         curr.execute("INSERT INTO employee VALUES (%s, %s,%s, %s, %s)",
                      (username, true_name, n_id, age, gender))
         admin.conn.commit()
+    except Exception as e:
+        raise
+    finally:
+        curr.close()
+
+def delete_user(admin, username):
+    curr = admin.conn.cursor()
+    try:
+        curr.execute("SELECT * FROM employee WHERE username=%s", (username,))
+        info = curr.fetchone()
+        if not info:
+            raise Exception("Username doesn't exist.")
+        print_user_info(info)
+
+        query = """
+        BEGIN;
+        DROP USER {};
+        DELETE FROM employee
+        WHERE username = %s;
+        COMMIT;
+        """.format(username)
+        curr.execute(query, (username,))
+
+        admin.conn.commit()
+        print("This account has been deleted.")
     except Exception as e:
         raise
     finally:
