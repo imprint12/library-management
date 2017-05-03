@@ -1,6 +1,7 @@
 from .employee import Employee
 from .helper_functions import *
 import os
+from . import admin_manage
 
 class Admin(Employee):
 
@@ -25,7 +26,8 @@ class Admin(Employee):
             print("5. Put arrived books on shelf.")
             print("6. Selling books.")
             print("7. Show transactions' records.")
-            print("8. Manage the information of yourself.\n")
+            print("8. Manage the information of yourself.")
+            print("9. Manage accounts of employees.\n")
 
             command = input("Enter command: ")
             # if (command == ""):
@@ -42,7 +44,7 @@ class Admin(Employee):
             #    self.interface()
             #cmd_n = command_ord - ord('0')
 
-            valid, cmd_n, cmd_arg = parse_command(command, 1, 8)
+            valid, cmd_n, cmd_arg = parse_command(command, 1, 9)
 
             if not valid:
                 print("Invalid input.")
@@ -68,3 +70,6 @@ class Admin(Employee):
                 self.manage_info()
             else:
                 self.admin_manage()
+
+    def admin_manage(self):
+        admin_manage.admin_manage(self)

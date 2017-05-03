@@ -2,8 +2,6 @@ from datetime import datetime
 q_ord = ord('q') - ord('0')
 
 # A helper function to print info of books.
-
-
 def print_books(books):
     for book in books:
         print("\nISBN: " + book[0])
@@ -18,8 +16,6 @@ def print_books(books):
     print()
 
 # A helper function to print info of some orders.
-
-
 def print_orders(orders, info):
     print("These are the " + info + " orders:\n")
     for order in orders:
@@ -41,8 +37,6 @@ def print_bills(bills, info):
 
 
 # Parse and return whether the user input is valid and other infomations.
-
-
 def parse_command(command, lower_bound, upper_bound):
     cmd = list(map(lambda s: s.strip().lower(), command.split('.')))
     valid = False
@@ -63,8 +57,6 @@ def parse_command(command, lower_bound, upper_bound):
     return valid, cmd_n, cmd_arg
 
 # Parse user input data string and return a python datetime object.
-
-
 def parse_date(arg):
     args = arg.split('-')
     if len(args) != 3:

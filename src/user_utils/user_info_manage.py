@@ -1,8 +1,9 @@
 from .helper_functions import *
 import getpass
-
+import os
 
 def manage_info(self):
+    os.system('clear')
     curr = self.conn.cursor()
     try:
         query = "SELECT * FROM {} WHERE username=%s".format(self.group)
@@ -18,9 +19,9 @@ def manage_info(self):
 
         command = input("\nEnter a command: ").strip()
         valid, cmd_n, cmd_arg = parse_command(command, 1, 3)
+
         if not valid:
-            print("Invalid input.")
-            return
+            raise Exception("Invalid command input.")
         if cmd_n == q_ord:
             return
 
@@ -43,8 +44,8 @@ def manage_info(self):
 def change_info(self, info, arg):
     curr = self.conn.cursor()
     try:
-        query = "UPDATE {} SET {}= WHERE username=%s".format(self.group, info)
-        curr.execute(query, (self.username,))
+        query = "UPDATE {} SET {}=%s WHERE username=%s".format(self.group, info)
+        curr.execute(query, (arg,self.username))
     except Exception as e:
         print(e)
     finally:
@@ -70,6 +71,6 @@ def change_pw(self, pw):
         curr.execute(query, (pw,))
         self.conn.commit()
     except Exception as e:
-        print(e)
+        raise e
     finally:
         curr.close()
