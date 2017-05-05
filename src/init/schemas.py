@@ -111,6 +111,7 @@ def create_auth(curr):
 #    """)
 
     curr.execute("""
+        GRANT SELECT (username) ON admin TO employee;
         GRANT SELECT, UPDATE ON employee TO employee;
         GRANT ALL ON book_info TO employee;
         GRANT ALL ON storage TO employee;

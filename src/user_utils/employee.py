@@ -1,4 +1,5 @@
 from datetime import datetime
+from helper_functions import *
 from . import book_funcs
 from . import bill_funcs
 from . import restock_funcs
@@ -27,7 +28,7 @@ class Employee:
             print("4. Pay for a restocking bill.")
             print("5. Put arrived books on shelf.")
             print("6. Selling books.")
-            print("7. Show transactions' records.\n")
+            print("7. Show transactions' records.")
             print("8. Manage the information of yourself.\n")
 
             command = input("Enter command: ")
@@ -49,7 +50,7 @@ class Employee:
 
             if not valid:
                 raise ValueError("Invalid input.")
-                
+
             if cmd_n == q_ord:
                 return
 
