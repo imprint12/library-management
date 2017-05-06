@@ -1,7 +1,7 @@
 from .helper_functions import *
 import os
 
-
+# Accomplish the function of book-searching required in "3.book search" in the pdf file
 def search(user):
     os.system('clear')
     print("\n1. (ISBN NUMBER)")
@@ -57,7 +57,8 @@ def search(user):
         curr.close()
         input("\nPress enter to continue.")
 
-
+# Accomplish the function of changing book information required
+# in "4.change book information" in the pdf file
 def change_info(user):
     os.system('clear')
     isbn = input("Enter the ISBN of the book that need to be changed: ")
@@ -111,9 +112,9 @@ def change_info(user):
         curr.close()
         input("Press enter to continue.")
 
-
+# Add the isbn of a new book which is not in the storage
+# as is required in "5.book restock" in the pdf file
 def add_book_info(user, isbn):
-
     title = input("Title: ").strip().lower()
     writers = input("Writers(split by commas): ")
     publisher = input("Publisher: ").strip().lower()

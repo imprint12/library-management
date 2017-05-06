@@ -1,7 +1,7 @@
 from .helper_functions import *
 import getpass
 import os
-
+# Accomplish the function of user management by himself as is required in "1.user management"
 def manage_info(self):
     os.system('clear')
     curr = self.conn.cursor()
@@ -40,7 +40,8 @@ def manage_info(self):
         curr.close()
         input("\nPress enter to continue.")
 
-
+# Change the information of the employee by himself as is required
+# in "1.user management" in the pdf file
 def change_info(self, info, arg):
     curr = self.conn.cursor()
     try:
@@ -51,7 +52,8 @@ def change_info(self, info, arg):
     finally:
         curr.close()
 
-
+# Change the password of the employee by himself as is required
+# in "1.user management" in the pdf file
 def change_pw_interface(self):
     while True:
         pw1 = getpass.getpass("Enter the new password: ")

@@ -2,7 +2,7 @@ from .helper_functions import *
 from datetime import datetime
 import os
 
-
+# Show the transactions during some period as is required in "11.check bill"
 def show_transactions(user):
     os.system('clear')
     print("Show all bills or specify a time interval")
@@ -64,7 +64,7 @@ def show_transactions(user):
         curr.close()
         input("\nPress enter to continue")
 
-
+# Pay for the books in the restock_order whose states are "unpaid"
 def pay(user):
     os.system('clear')
     curr = user.conn.cursor()
@@ -127,7 +127,7 @@ def pay(user):
         curr.close()
         input("Press enter to continue.")
 
-
+# Sell the books in the storage as is required in "9.purchase books"
 def sell(user):
     curr = user.conn.cursor()
     try:

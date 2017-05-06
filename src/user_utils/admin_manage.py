@@ -3,6 +3,8 @@ import os
 import getpass
 
 
+# Accomplish the function of user management required in "1.user
+# management" in the pdf file
 def admin_manage(user):
     os.system('clear')
     print("1.(USERNAME) Show user's infomation.")
@@ -33,7 +35,8 @@ def admin_manage(user):
     finally:
         input("\nPress enter to continue.")
 
-
+# Display the information of all employees by admin as is required in
+# "1.user management" in the pdf file
 def admin_show_info(admin, username):
     curr = admin.conn.cursor()
     try:
@@ -57,7 +60,8 @@ def admin_show_info(admin, username):
     finally:
         curr.close()
 
-
+# Change the information of employees by the admin as is required
+# in "1.user management" in the pdf file
 def admin_change_info(admin, username):
     curr = admin.conn.cursor()
     try:
@@ -95,11 +99,13 @@ def admin_change_info(admin, username):
     finally:
         curr.close()
 
-
+# Change the password of the employee by the admin as is required
+# in "1.user management" in the pdf file
 def admin_change_pw(admin, username):
     curr = admin.conn.cursor()
     try:
-        curr.execute("SELECT %s in (SELECT username FROM employee)", (username,))
+        curr.execute(
+            "SELECT %s in (SELECT username FROM employee)", (username,))
         exist = curr.fetchone()
         if not exist[0]:
             raise Exception("Username doesn't exist.")
@@ -121,7 +127,8 @@ def admin_change_pw(admin, username):
     finally:
         curr.close()
 
-
+# Create an employee account by the admin as is required in "1.user management"
+# in the pdf file
 def create_user(admin):
     curr = admin.conn.cursor()
 
@@ -156,6 +163,7 @@ def create_user(admin):
     finally:
         curr.close()
 
+# Delete certain employee account by the admin as is required in "1.user management"
 def delete_user(admin, username):
     curr = admin.conn.cursor()
     try:

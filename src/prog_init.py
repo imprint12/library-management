@@ -6,7 +6,7 @@ from init.schemas import *
 print('Warning!')
 print('This script should only be run by the superintendent of the library to initiate the library management program.')
 print('The database and admin account will be established during the execution.')
-print('Root account may be need as well.')
+print('Root account may be needed as well.')
 run = input('Initiate the program?(y/n)')
 
 if run not in ['y', 'Y']:
@@ -14,7 +14,7 @@ if run not in ['y', 'Y']:
 
 call(["createdb", "library"])
 print("Postgres database 'library' has been created.")
-
+# Admin login info
 admin_name = input("Enter the user name of admin account: ")
 while True:
     admin_pass1 = getpass.getpass("Enter the password of admin account: ")
@@ -35,10 +35,12 @@ curr = conn.cursor()
 create_tables(curr)
 create_auth(curr)
 
+# Create the admin account required in "1.user manegement" in the pdf file
 curr.execute("CREATE USER " + admin_name +
-        " CREATEROLE ENCRYPTED PASSWORD %s IN GROUP admin;", (admin_pass1,))
+             " CREATEROLE ENCRYPTED PASSWORD %s IN GROUP admin;", (admin_pass1,))
 
-curr.execute("INSERT INTO admin VALUES (%s, %s, 0, %s, %s);", (admin_name, true_name, age, gender))
+curr.execute("INSERT INTO admin VALUES (%s, %s, 0, %s, %s);",
+             (admin_name, true_name, age, gender))
 
 print("Admin account {} have been constructed.".format(admin_name))
 

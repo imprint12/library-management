@@ -75,7 +75,7 @@ def create_tables(curr):
 
     curr.execute("""
         CREATE TABLE revenue_storage(
-            bill_no INTEGER PRIMARY KEY REFERENCES revenue_storage,
+            bill_no INTEGER PRIMARY KEY REFERENCES payment_bill,
             ISBN VARCHAR(20) REFERENCES book_info,
             num INTEGER
         )

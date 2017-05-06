@@ -15,6 +15,7 @@ class Employee:
         self.username = username
         self.group = 'employee'
 
+    # Choose the function you want to implement as is listed below
     def interface(self):
         while True:
             os.system('clear')
@@ -71,6 +72,9 @@ class Employee:
             elif cmd_n == 8:
                 self.manage_info()
 
+
+    # Define the functions briefly and these functions
+    # will be accomplished in specific source files
     def search(self):
         book_funcs.search(self)
 

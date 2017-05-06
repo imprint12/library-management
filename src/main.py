@@ -7,7 +7,7 @@ import os
 os.system('clear')
 print('Welcome to the library management software!')
 
-while True:
+while True:              # Connect to the database in PostgreSQL
     try:
         username = input('Username: ')
         password = getpass.getpass('Password: ')

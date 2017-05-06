@@ -2,7 +2,7 @@ from .helper_functions import *
 from .book_funcs import add_book_info
 import os
 
-
+# Check whether the books to be reatocked are in storage
 def restock(user):
     os.system('clear')
     isbn = input(
@@ -43,7 +43,8 @@ def restock(user):
         curr.close()
         input("Press enter to continue.")
 
-
+# Put books in the restock_order which state is "paid" on shelf and set state "put" in restock_order
+# as is required in "8.add new books" in the pdf file
 def put_books(user):
     os.system('clear')
     curr = user.conn.cursor()
