@@ -117,6 +117,7 @@ def create_auth(curr):
         GRANT ALL ON storage TO employee;
         GRANT ALL ON restock_order TO employee;
         GRANT ALL ON revenue_bill TO employee;
+        GRANT ALL ON payment_bill TO employee;
 
         GRANT INSERT, SELECT ON restock_pay TO employee;
         GRANT INSERT, SELECT ON revenue_storage TO employee;

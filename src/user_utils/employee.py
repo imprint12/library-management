@@ -1,5 +1,5 @@
 from datetime import datetime
-from helper_functions import *
+from .helper_functions import *
 from . import book_funcs
 from . import bill_funcs
 from . import restock_funcs
@@ -26,11 +26,12 @@ class Employee:
             print("1. Search for books.")
             print("2. Change information of books.")
             print("3. Restock.")
-            print("4. Pay for a restocking bill.")
-            print("5. Put arrived books on shelf.")
-            print("6. Selling books.")
-            print("7. Show transactions' records.")
-            print("8. Manage the information of yourself.\n")
+            print("4. Pay for a restocking order.")
+            print("5. Cancel a restocking order.")
+            print("6. Put arrived books on shelf.")
+            print("7. Selling books.")
+            print("8. Show transactions' records.")
+            print("9. Manage the information of yourself.")
 
             command = input("Enter command: ")
             # if (command == ""):
@@ -47,7 +48,7 @@ class Employee:
             #    self.interface()
             #cmd_n = command_ord - ord('0')
 
-            valid, cmd_n, cmd_arg = parse_command(command, 1, 8)
+            valid, cmd_n, cmd_arg = parse_command(command, 1, 9)
 
             if not valid:
                 raise ValueError("Invalid input.")
@@ -64,12 +65,14 @@ class Employee:
             elif cmd_n == 4:
                 self.pay()
             elif cmd_n == 5:
-                self.put_books()
+                self.cancel()
             elif cmd_n == 6:
-                self.sell()
+                self.put_books()
             elif cmd_n == 7:
-                self.show_transactions()
+                self.sell()
             elif cmd_n == 8:
+                self.show_transactions()
+            elif cmd_n == 9:
                 self.manage_info()
 
 
@@ -86,6 +89,9 @@ class Employee:
 
     def restock(self):
         restock_funcs.restock(self)
+
+    def cancel(self):
+        restock_funcs.cancel(self)
 
     def put_books(self):
         restock_funcs.put_books(self)

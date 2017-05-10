@@ -22,12 +22,13 @@ class Admin(Employee):
             print("1. Search for books.")
             print("2. Change information of books.")
             print("3. Restock.")
-            print("4. Pay for a restocking bill.")
-            print("5. Put arrived books on shelf.")
-            print("6. Selling books.")
-            print("7. Show transactions' records.")
-            print("8. Manage the information of yourself.")
-            print("9. Manage accounts of employees.\n")
+            print("4. Pay for a restocking order.")
+            print("5. Cancel a restocking order.")
+            print("6. Put arrived books on shelf.")
+            print("7. Selling books.")
+            print("8. Show transactions' records.")
+            print("9. Manage the information of yourself.")
+            print("10. Manage accounts of employees.\n")
 
             command = input("Enter command: ")
             # if (command == ""):
@@ -44,7 +45,7 @@ class Admin(Employee):
             #    self.interface()
             #cmd_n = command_ord - ord('0')
 
-            valid, cmd_n, cmd_arg = parse_command(command, 1, 9)
+            valid, cmd_n, cmd_arg = parse_command(command, 1, 10)
 
             if not valid:
                 print("Invalid input.")
@@ -61,12 +62,14 @@ class Admin(Employee):
             elif cmd_n == 4:
                 self.pay()
             elif cmd_n == 5:
-                self.put_books()
+                self.cancel()
             elif cmd_n == 6:
-                self.sell()
+                self.put_books()
             elif cmd_n == 7:
-                self.show_transactions()
+                self.sell()
             elif cmd_n == 8:
+                self.show_transactions()
+            elif cmd_n == 9:
                 self.manage_info()
             else:
                 self.admin_manage()

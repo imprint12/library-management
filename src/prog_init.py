@@ -2,6 +2,10 @@ from subprocess import call
 import getpass
 import psycopg2
 from init.schemas import *
+import os
+
+
+os.system('clear')
 
 print('Warning!')
 print('This script should only be run by the superintendent of the library to initiate the library management program.')

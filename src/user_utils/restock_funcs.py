@@ -3,6 +3,8 @@ from .book_funcs import add_book_info
 import os
 
 # Check whether the books to be reatocked are in storage
+
+
 def restock(user):
     os.system('clear')
     isbn = input(
@@ -19,7 +21,7 @@ def restock(user):
             add_book_info(user, isbn)
 
         num = int(input("How many books to order? "))
-        price = int(input("What's the price of one book? "))
+        price = float(input("What's the price of one book? "))
 
         total_price = num * price
         curr.execute("""
@@ -43,6 +45,43 @@ def restock(user):
         curr.close()
         input("Press enter to continue.")
 
+
+def cancel(user):
+    os.system('clear')
+    curr = user.conn.cursor()
+    try:
+        curr.execute("SELECT * FROM restock_order WHERE state = 'unpaid';")
+        orders = curr.fetchall()
+        if orders == []:
+            print("No unpaid orders")
+        else:
+            print_orders(orders, 'unpaid')
+            command = input("\nEnter the order number to cancil: ").strip()
+            if not command.isdigit():
+                raise Exception("Unvalid Input")
+            command = int(command)
+            command = int(command)
+
+            order = None
+            for o in orders:
+                if command == o[0]:
+                    order = o
+            if not order:
+                # if command not in [o[0] for o in orders]:
+                raise ValueError("Invalid input.")
+            curr.execute(
+                "UPDATE restock_order SET state = 'cancel' WHERE order_no=%s", (command,))
+
+            user.conn.commit()
+            print("Cancel succeeded.")
+    except Exception as e:
+        print("Error occured.")
+        print(e)
+    finally:
+        curr.close()
+        input("Press enter to continue.")
+
+
 # Put books in the restock_order which state is "paid" on shelf and set state "put" in restock_order
 # as is required in "8.add new books" in the pdf file
 def put_books(user):
@@ -61,7 +100,8 @@ def put_books(user):
             return
         print_orders(orders, "paid")
 
-        command = input("\nEnter the order number to pay: ").strip()
+        command = input(
+            "\nEnter the order number to put those books on shelf: ").strip()
         if not command.isdigit():
             print("Invalid input.")
             return

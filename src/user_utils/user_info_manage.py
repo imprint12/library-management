@@ -34,6 +34,8 @@ def manage_info(self):
         else:
             change_info(self, 'gender', cmd_arg)
 
+        self.conn.commit()
+
     except Exception as e:
         print(e)
     finally:
@@ -71,7 +73,7 @@ def change_pw(self, pw):
     try:
         query = "ALTER USER {} WITH  PASSWORD %s".format(self.username)
         curr.execute(query, (pw,))
-        self.conn.commit()
+
     except Exception as e:
         raise e
     finally:

@@ -10,7 +10,7 @@ def print_books(books):
         for wt in book[2]:
             print(' ' + wt.title(), end=',')
         print("\b ")
-        print("Publisher: " + book[3])
+        print("Publisher: " + book[3].title())
         print("Price: " + str(book[4]))
         print("Storage number: " + str(book[5]))
     print()
@@ -38,23 +38,26 @@ def print_bills(bills, info):
 
 # Parse and return whether the user input is valid and other infomations.
 def parse_command(command, lower_bound, upper_bound):
-    cmd = list(map(lambda s: s.strip().lower(), command.split('.')))
-    valid = False
-    cmd_n = ord(cmd[0]) - ord('0')
-
     if command == "":
         return False, None, None
-    if cmd[0] == 'q' or lower_bound <= cmd_n <= upper_bound:
-        valid = True
-
-    cmd_arg = None
-    if len(cmd) > 1:
-        if ',' in cmd[1]:
-            cmd_arg = cmd[1].split(',')
-        else:
-            cmd_arg = cmd[1]
-
-    return valid, cmd_n, cmd_arg
+    try:
+        cmd = list(map(lambda s: s.strip().lower(), command.split('.',1)))
+        valid, cmd_n = False, None
+        if cmd[0].isdigit():
+            cmd_n = int(cmd[0])
+        elif cmd[0] == 'q':
+            cmd_n = ord('q') - ord('0')
+        if cmd_n == q_ord or lower_bound <= cmd_n <= upper_bound:
+            valid = True
+        cmd_arg = None
+        if len(cmd) > 1:
+            if ',' in cmd[1]:
+                cmd_arg = cmd[1].split(',')
+            else:
+                cmd_arg = cmd[1]
+        return valid, cmd_n, cmd_arg
+    except:
+        raise
 
 # Parse user input data string and return a python datetime object.
 def parse_date(arg):

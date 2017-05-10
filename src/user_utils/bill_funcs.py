@@ -129,6 +129,7 @@ def pay(user):
 
 # Sell the books in the storage as is required in "9.purchase books"
 def sell(user):
+    os.system('clear')
     curr = user.conn.cursor()
     try:
         curr.execute("""

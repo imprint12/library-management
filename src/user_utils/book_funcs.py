@@ -73,13 +73,14 @@ def change_info(user):
     command_table = {1: 'title', 2: 'writer', 3: 'publisher'}
 
     command = input("Command: ")
-    cmd = command.split('.')
+    #cmd = command.split('.')
+
     try:
-        if len(cmd) != 2 or not('1' <= cmd[0] <= '4'):
-            raise ValueError("Invalid command.")
-        cmd_n, arg = ord(cmd[0].strip()) - ord('0'), cmd[1].strip().lower()
-        if cmd_n == 2:
-            arg = list(map(lambda x: x.strip().lower(), arg.split(',')))
+        valid, cmd_n, arg = parse_command(command, 1, 5)
+        if not valid:
+            raise ValueError("Invalid input.")
+        if cmd_n == q_ord:
+            return
         if cmd_n == 4:
             try:
                 curr.execute("""
@@ -118,8 +119,7 @@ def add_book_info(user, isbn):
     title = input("Title: ").strip().lower()
     writers = input("Writers(split by commas): ")
     publisher = input("Publisher: ").strip().lower()
-    price = int(input("Price per book to sell: "))
-
+    price = float(input("Price per book to sell: "))
     writers = list(map(lambda x: x.strip().lower(), writers.split(',')))
 
     try:
